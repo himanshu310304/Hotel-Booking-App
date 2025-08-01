@@ -17,6 +17,7 @@ const clerkWebhooks = async (req, res) =>{
 
         // Getting Data from request body
         const {data , type} = req.body
+        console.log("Webhook received:", type, data);
 
         const userData = {
             _id: data.id,
@@ -24,21 +25,24 @@ const clerkWebhooks = async (req, res) =>{
             username: data.first_name + " " + data.last_name,
             image: data.image_url,
         }
+        console.log("User Data:", userData);
 
         // Switch case for  different types of events
         switch(type){
             case "user.created":{
-                await User.create(userData);
+                const res = await User.create(userData);
+                if(res) console.log("User created successfully:", res);
+                // else console.log(res);
                 break;
             }
             
             case "user.updated":{
-                await User.findbyIdAndUpdate(data.id, userData);
+                await User.findByIdAndUpdate(data.id, userData);
                 break;
             }
             
             case "user.deleted":{
-                await User.findbyIdAndDelete(data.id);
+                await User.findByIdAndDelete(data.id);
                 break;
             }
 
